@@ -2,12 +2,17 @@
 
 namespace Cqcqs\Logger\Providers;
 
+use Cqcqs\Logger\Commands\PublishCommand;
 use Laravel\Lumen\Application as LumenApplication;
 use App\Components\LogManager;
 use Illuminate\Support\ServiceProvider;
 
-class LoggerProvider extends ServiceProvider
+class LogServiceProvider extends ServiceProvider
 {
+    protected $commands = [
+        PublishCommand::class
+    ];
+
     /**
      * Register services.
      *
@@ -16,6 +21,8 @@ class LoggerProvider extends ServiceProvider
     public function register()
     {
         $this->defineTraceId();
+
+        $this->commands($this->commands);
 
         $this->app->singleton('log', function ($app) {
             if ($app instanceof LumenApplication) {
@@ -34,7 +41,7 @@ class LoggerProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        $this->registerPublishing();
     }
 
     /**
@@ -49,6 +56,18 @@ class LoggerProvider extends ServiceProvider
             } else {
                 define('TRACE_ID', $_SERVER['TRACE_ID'] ?? $_SERVER['REQUEST_TIME']);
             }
+        }
+    }
+
+    /**
+     * 资源发布注册.
+     *
+     * @return void
+     */
+    protected function registerPublishing()
+    {
+        if ($this->app->runningInConsole()) {
+            $this->publishes([__DIR__.'/../../config' => config_path()], 'cqcqs-logger-config');
         }
     }
 }

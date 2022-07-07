@@ -48,7 +48,7 @@ class LogManager extends \Illuminate\Log\LogManager
         if ($excludeStackChannel && $name == 'stack') {
             return false;
         }
-        if (!in_array($name, $this->collectionChannels)) {
+        if ($this->collectionChannels && !in_array($name, $this->collectionChannels)) {
             return false;
         }
         return true;
