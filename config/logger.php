@@ -19,6 +19,6 @@ return [
         // 响应日志
         'response' => false,
         // 日志通道，需在logging中配置
-        'channel' => 'daily'
+        'channel' => ''
     ]
 ];

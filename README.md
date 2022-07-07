@@ -6,7 +6,13 @@ composer require cqcqs/laravel-logger
 
 ## Use
 
-### Configure
+### Init
+
+```bash
+php artisan logger:publish
+```
+
+该命令会自动生成 `config/logger.php` 配置文件，并清除配置缓存
 
 **config/logger.php**
 
@@ -14,10 +20,11 @@ composer require cqcqs/laravel-logger
 return [
     // 启用状态
     'enable' => true,
-    // 需要收集的日志通道
-    'channels' => ['daily'],
+    // 需要收集的日志通道，默认所有
+    'channels' => [],
     // 日志路径
     'path' => storage_path('logs/all.log'),
+    
     // 请求日志，需引入中间件
     'request' => [
         // 需要排除的路由
@@ -29,7 +36,7 @@ return [
         // 响应日志
         'response' => false,
         // 日志通道，需在logging中配置
-        'channel' => 'daily'
+        'channel' => ''
     ]
 ];
 ```
@@ -43,6 +50,8 @@ Cqcqs\Logger\Providers\LoggerProvider::class
 ```
 
 ### Middleware
+
+**app/Http/Kernel.php**
 
 ```php
 Cqcqs\Logger\Middleware\RequestLogMiddleware::class
