@@ -1,0 +1,29 @@
+{
+    "name": "cqcqs/laravel-logger",
+    "description": "laravel logger",
+    "type": "library",
+    "keywords": [
+        "laravel",
+        "log",
+        "php"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": ">=7.0"
+    },
+    "require-dev": {
+        "laravel/framework": "^6.0"
+    },
+    "authors": [
+        {
+            "name": "cqcqs",
+            "email": "775038529@qq.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Cqcqs\\Logger\\": "src"
+        }
+    }
+}

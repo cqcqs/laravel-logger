@@ -1,14 +1,14 @@
 ## Install
 
 ```bash
-composer install cqcqs/laravel-logger
+composer require cqcqs/laravel-logger
 ```
 
 ## Use
 
 ### Configure
 
-** config/logger.php **
+**config/logger.php**
 
 ```php
 return [
@@ -36,7 +36,7 @@ return [
 
 ### Provider
 
-** config/app.php **
+**config/app.php**
 
 ```php
 Cqcqs\Logger\Providers\LoggerProvider::class
