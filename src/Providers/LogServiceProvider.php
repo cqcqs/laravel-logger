@@ -76,7 +76,7 @@ class LogServiceProvider extends ServiceProvider
             $this->commands($this->commands);
             // Register Middleware
             $httpKernel = $this->app->make(\Illuminate\Contracts\Http\Kernel::class);
-            $httpKernel->pushMiddleware(ApiLog::class);
+            $httpKernel->pushMiddleware(RequestLogMiddleware::class);
         } elseif ($app instanceof LumenApplication) {
             $app->configure('logging');
             $app->configure('logger');
