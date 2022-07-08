@@ -61,9 +61,15 @@ class LogManager extends \Illuminate\Log\LogManager
         }
     }
 
-    protected function resolve($name): LoggerInterface
+    protected function resolve($name, $config=null): LoggerInterface
     {
-        $logger = parent::resolve($name);
+        $reflectionClass = new \ReflectionClass(\Illuminate\Log\LogManager::class);
+        $reflectionMethod = $reflectionClass->getMethod('resolve');
+        if($reflectionMethod->getNumberOfParameters() == 2) {
+            $logger = parent::resolve($name, $config);
+        }else{
+            $logger = parent::resolve($name);
+        }
         $this->appendHandler($name, $logger);
         return $logger;
     }
