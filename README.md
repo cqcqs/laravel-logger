@@ -25,9 +25,11 @@ return [
     // 日志路径
     'path' => storage_path('logs/all.log'),
     
-    // 请求日志，需引入中间件
+    // 请求日志
     'request' => [
-        // 需要排除的路由
+        // 请求日志状态
+        'enable' => true,
+        // 需要排除的路由别名
         'except_routes' => [],
         // 头部日志
         'header' => false,
@@ -35,8 +37,12 @@ return [
         'body' => false,
         // 响应日志
         'response' => false,
-        // 日志通道，需在logging中配置
-        'channel' => ''
+        // 日志
+        'log' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/io.log'),
+            'level' => 'info',
+        ]
     ]
 ];
 ```
@@ -49,10 +55,10 @@ return [
 Cqcqs\Logger\Providers\LoggerProvider::class
 ```
 
-### Middleware
+## 注意
 
-**app/Http/Kernel.php**
+> Lumen 需手动创建配置文件 config/logger.php，并在项目中注册 Provider
 
-```php
-Cqcqs\Logger\Middleware\RequestLogMiddleware::class
+```
+$app->register(Cqcqs\Logger\Providers\LogServiceProvider::class);
 ```
