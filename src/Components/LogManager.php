@@ -9,7 +9,7 @@ use Psr\Log\LoggerInterface;
 class LogManager extends \Illuminate\Log\LogManager
 {
     protected $agentLogHandler;
-
+    protected $agentFormatter;
     protected $collectionChannels = [];
     protected $collectionEnable = false;
 
@@ -35,9 +35,12 @@ class LogManager extends \Illuminate\Log\LogManager
         }
         $fp = fopen($path, 'a');
         $this->agentLogHandler = new StreamHandler($fp);
-        $formatter = new JsonFormatter();
+        /*$formatter = new JsonFormatter();
         $formatter->includeStacktraces();
-        $this->agentLogHandler->setFormatter($formatter);
+        $this->agentLogHandler->setFormatter($formatter);*/
+        $this->agentFormatter = new JsonFormatter();
+        $this->agentFormatter->includeStacktraces();
+        $this->agentLogHandler->setFormatter($this->agentFormatter);
     }
 
     protected function isCollectionChannel($name, $excludeStackChannel): bool
@@ -71,6 +74,26 @@ class LogManager extends \Illuminate\Log\LogManager
             $logger = parent::resolve($name);
         }
         $this->appendHandler($name, $logger);
+        return $logger;
+    }
+
+    /**
+     * @param string $name
+     * @param \Illuminate\Log\Logger $logger
+     * @return \Illuminate\Log\Logger
+     */
+    protected function tap($name, \Illuminate\Log\Logger $logger)
+    {
+        $taps = $this->configurationFor($name)['tap'] ?? [] ;
+        if(!$taps){
+            return $logger;
+        }
+        $logger = parent::tap($name,$logger);
+        foreach ($logger->getHandlers() as $handler) {
+            if ($handler === $this->agentLogHandler && $handler->getFormatter() != $this->agentFormatter) {
+                $handler->setFormatter($this->agentFormatter);
+            }
+        }
         return $logger;
     }
 

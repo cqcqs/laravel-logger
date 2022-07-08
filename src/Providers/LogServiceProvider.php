@@ -5,9 +5,11 @@ namespace Cqcqs\Logger\Providers;
 use Cqcqs\Logger\Commands\PublishCommand;
 use Cqcqs\Logger\Middleware\RequestLogMiddleware;
 use Illuminate\Foundation\Application as LaravelApplication;
+use Illuminate\Support\Facades\Log;
 use Laravel\Lumen\Application as LumenApplication;
-use App\Components\LogManager;
+use Cqcqs\Logger\Components\LogManager;
 use Illuminate\Support\ServiceProvider;
+use Exception;
 
 class LogServiceProvider extends ServiceProvider
 {
@@ -22,24 +24,16 @@ class LogServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->defineTraceId();
+        // 注册应用依赖，加载中间件、配置、脚本
+        $this->registerService();
 
+        // 配置日志库
         $this->setRequestLoggingChannel();
 
-        $this->commands($this->commands);
+        // define trace id
+        $this->defineTraceId();
 
         $this->app->singleton('log', function ($app) {
-            if ($app instanceof LumenApplication) {
-                // Lumen Application
-                $app->configure('logging');
-                $app->configure('logger');
-                // Register Middleware
-                $this->app->middleware(RequestLogMiddleware::class);
-            } elseif ($app instanceof LaravelApplication) {
-                // Register Middleware
-                $httpKernel = $this->app->make(\Illuminate\Contracts\Http\Kernel::class);
-                $httpKernel->pushMiddleware(RequestLogMiddleware::class);
-            }
             return new LogManager($app);
         });
     }
@@ -56,6 +50,7 @@ class LogServiceProvider extends ServiceProvider
 
     /**
      * Define Trace ID
+     *
      * @return void
      */
     private function defineTraceId()
@@ -69,6 +64,34 @@ class LogServiceProvider extends ServiceProvider
         }
     }
 
+    /**
+     * 注册应用依赖，加载中间件、配置
+     * @return void
+     * @throws Exception
+     */
+    private function registerService()
+    {
+        $app = $this->app;
+        if ($app instanceof LaravelApplication) {
+            $this->commands($this->commands);
+            // Register Middleware
+            $httpKernel = $this->app->make(\Illuminate\Contracts\Http\Kernel::class);
+            $httpKernel->pushMiddleware(ApiLog::class);
+        } elseif ($app instanceof LumenApplication) {
+            $app->configure('logging');
+            $app->configure('logger');
+            // Register Middleware
+            $app->middleware(RequestLogMiddleware::class);
+        } else {
+            Log::error('Project must be Laravel or Lumen.');
+        }
+    }
+
+    /**
+     * 配置日志库
+     *
+     * @return void
+     */
     private function setRequestLoggingChannel()
     {
         $requestLog = config('logger.request.log');
@@ -86,7 +109,7 @@ class LogServiceProvider extends ServiceProvider
      */
     protected function registerPublishing()
     {
-        if ($this->app->runningInConsole()) {
+        if ($this->app instanceof LaravelApplication && $this->app->runningInConsole()) {
             $this->publishes([__DIR__.'/../../config' => config_path()], 'cqcqs-logger-config');
         }
     }

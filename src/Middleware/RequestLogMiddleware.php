@@ -33,7 +33,11 @@ class RequestLogMiddleware
             return;
         }
         $uri = $request->getRequestUri();
-        $routeName = $request->route()->getName();
+        if (method_exists($request->route(), 'getName')) {
+            $routeName = $request->route()->getName();
+        } else {
+            $routeName = $uri;
+        }
         $exceptRoutes = self::config('except_routes');
         if($exceptRoutes && !in_array($routeName, $exceptRoutes)) {
             return;
