@@ -48,7 +48,7 @@ class RequestLogMiddleware
             $header = $request->headers->all();
         }
         if(self::config('request.body')){
-            $body = $_POST;
+            $body = $request->all();
         }
         if(self::config('request.response') && ($response instanceof JsonResponse)){
             $responseData = $response->getContent();
