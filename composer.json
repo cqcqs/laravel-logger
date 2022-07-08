@@ -25,5 +25,13 @@
         "psr-4": {
             "Cqcqs\\Logger\\": "src"
         }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "\\Cqcqs\\Logger\\Providers\\LogServiceProvider"
+            ]
+        }
     }
+
 }

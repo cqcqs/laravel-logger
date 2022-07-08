@@ -8,7 +8,7 @@ return [
     // 日志路径
     'path' => storage_path('logs/all.log'),
     
-    // 请求日志，需引入中间件
+    // 请求日志
     'request' => [
         // 需要排除的路由
         'except_routes' => [],
@@ -18,7 +18,11 @@ return [
         'body' => false,
         // 响应日志
         'response' => false,
-        // 日志通道，需在logging中配置
-        'channel' => ''
+        // 日志
+        'log' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/in-out.log'),
+            'level' => 'info',
+        ]
     ]
 ];

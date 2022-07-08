@@ -3,6 +3,8 @@
 namespace Cqcqs\Logger\Providers;
 
 use Cqcqs\Logger\Commands\PublishCommand;
+use Cqcqs\Logger\Middleware\RequestLogMiddleware;
+use Illuminate\Foundation\Application as LaravelApplication;
 use Laravel\Lumen\Application as LumenApplication;
 use App\Components\LogManager;
 use Illuminate\Support\ServiceProvider;
@@ -22,6 +24,8 @@ class LogServiceProvider extends ServiceProvider
     {
         $this->defineTraceId();
 
+        $this->setRequestLoggingChannel();
+
         $this->commands($this->commands);
 
         $this->app->singleton('log', function ($app) {
@@ -29,6 +33,12 @@ class LogServiceProvider extends ServiceProvider
                 // Lumen Application
                 $app->configure('logging');
                 $app->configure('logger');
+                // Register Middleware
+                $this->app->middleware(RequestLogMiddleware::class);
+            } elseif ($app instanceof LaravelApplication) {
+                // Register Middleware
+                $httpKernel = $this->app->make(\Illuminate\Contracts\Http\Kernel::class);
+                $httpKernel->pushMiddleware(RequestLogMiddleware::class);
             }
             return new LogManager($app);
         });
@@ -57,6 +67,17 @@ class LogServiceProvider extends ServiceProvider
                 define('TRACE_ID', $_SERVER['TRACE_ID'] ?? $_SERVER['REQUEST_TIME']);
             }
         }
+    }
+
+    private function setRequestLoggingChannel()
+    {
+        $requestLog = config('logger.request.log');
+        $logging = [
+            'driver' => data_get($requestLog, 'driver') ?? 'daily',
+            'path' => data_get($requestLog, 'path') ?? storage_path('logs/in-out.log'),
+            'level' => data_get($requestLog, 'level') ?? 'info',
+        ];
+        config(['logging.channels.request_log' => $logging]);
     }
 
     /**
