@@ -29,6 +29,9 @@ class RequestLogMiddleware
 
     public static function log(Request $request, $response)
     {
+        if (!self::config('request.enable')) {
+            return;
+        }
         $uri = $request->getRequestUri();
         $routeName = $request->route()->getName();
         $exceptRoutes = self::config('except_routes');
@@ -50,7 +53,7 @@ class RequestLogMiddleware
         }
         $data =  compact('uri','header','body','responseData');
         if($data) {
-            Log::channel(LOGGER_REQUEST_LOG_CHANNEL)->info('request-log',$data);
+            Log::channel('request_log')->info('request-log',$data);
         }
     }
 
@@ -64,11 +67,4 @@ class RequestLogMiddleware
         return config("logger.{$key}", $default);
     }
 
-    /**
-     * @return mixed
-     */
-    private static function channel()
-    {
-        return self::config('request.channel');
-    }
 }

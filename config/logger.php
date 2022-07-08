@@ -10,6 +10,8 @@ return [
     
     // 请求日志
     'request' => [
+        // 请求日志状态
+        'enable' => true,
         // 需要排除的路由
         'except_routes' => [],
         // 头部日志

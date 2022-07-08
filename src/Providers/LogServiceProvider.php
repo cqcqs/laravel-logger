@@ -72,15 +72,11 @@ class LogServiceProvider extends ServiceProvider
     private function setRequestLoggingChannel()
     {
         $requestLog = config('logger.request.log');
-        $logging = [
+        config(['logging.channels.request_log' => [
             'driver' => data_get($requestLog, 'driver') ?? 'daily',
             'path' => data_get($requestLog, 'path') ?? storage_path('logs/in-out.log'),
             'level' => data_get($requestLog, 'level') ?? 'info',
-        ];
-        // define log channel
-        $requestLogChannel = 'request_log';
-        define('LOGGER_REQUEST_LOG_CHANNEL', $requestLogChannel);
-        config(['logging.channels.'.$requestLogChannel => $logging]);
+        ]]);
     }
 
     /**
