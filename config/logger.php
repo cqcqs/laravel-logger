@@ -12,7 +12,7 @@ return [
     'request' => [
         // 请求日志状态
         'enable' => true,
-        // 需要排除的路由
+        // 需要排除的路由别名
         'except_routes' => [],
         // 头部日志
         'header' => false,
@@ -23,7 +23,7 @@ return [
         // 日志
         'log' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/in-out.log'),
+            'path' => storage_path('logs/io.log'),
             'level' => 'info',
         ]
     ]
