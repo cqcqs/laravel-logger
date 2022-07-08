@@ -77,7 +77,10 @@ class LogServiceProvider extends ServiceProvider
             'path' => data_get($requestLog, 'path') ?? storage_path('logs/in-out.log'),
             'level' => data_get($requestLog, 'level') ?? 'info',
         ];
-        config(['logging.channels.request_log' => $logging]);
+        // define log channel
+        $requestLogChannel = 'request_log';
+        define('LOGGER_REQUEST_LOG_CHANNEL', $requestLogChannel);
+        config(['logging.channels.'.$requestLogChannel => $logging]);
     }
 
     /**

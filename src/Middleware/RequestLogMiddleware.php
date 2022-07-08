@@ -22,7 +22,7 @@ class RequestLogMiddleware
         try{
             self::log($request,$response);
         }catch (\Exception $e){
-            Log::channel(self::channel())->error($e->getMessage(), ['exception' => $e]);
+            // Log::channel(self::channel())->error($e->getMessage(), ['exception' => $e]);
         }
         return $response;
     }
@@ -50,7 +50,7 @@ class RequestLogMiddleware
         }
         $data =  compact('uri','header','body','responseData');
         if($data) {
-            Log::channel(self::channel())->info('request-log',$data);
+            Log::channel(LOGGER_REQUEST_LOG_CHANNEL)->info('request-log',$data);
         }
     }
 
