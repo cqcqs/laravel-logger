@@ -59,7 +59,7 @@ class LogServiceProvider extends ServiceProvider
             if (php_sapi_name() === 'cli') {
                 define('TRACE_ID', "console-" . time());
             } else {
-                define('TRACE_ID', $_SERVER['HTTP_X_ATRACE_ID'] ?: $_SERVER['TRACE_ID'] ?: $_SERVER['REQUEST_TIME']);
+                define('TRACE_ID', $_SERVER['HTTP_X_ATRACE_ID'] ?? $_SERVER['TRACE_ID'] ?? $_SERVER['REQUEST_TIME']);
             }
         }
     }
